@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GZipTest", "GZipTest\GZipTest.csproj", "{8E0D7329-7C17-4E18-AB62-8A01A3199537}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GZipTest.Tests", "GZipTest.Tests\GZipTest.Tests.csproj", "{EC32F0F1-C9A1-4C1D-B265-E5C912AA89EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8E0D7329-7C17-4E18-AB62-8A01A3199537}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E0D7329-7C17-4E18-AB62-8A01A3199537}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E0D7329-7C17-4E18-AB62-8A01A3199537}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E0D7329-7C17-4E18-AB62-8A01A3199537}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC32F0F1-C9A1-4C1D-B265-E5C912AA89EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC32F0F1-C9A1-4C1D-B265-E5C912AA89EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC32F0F1-C9A1-4C1D-B265-E5C912AA89EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC32F0F1-C9A1-4C1D-B265-E5C912AA89EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D8CB5744-F278-498D-97C4-60A24EC09601}
+	EndGlobalSection
+EndGlobal

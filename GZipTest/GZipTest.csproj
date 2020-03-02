@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8E0D7329-7C17-4E18-AB62-8A01A3199537}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>GZipTest</RootNamespace>
+    <AssemblyName>GZipTest</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Action.cs" />
+    <Compile Include="ActionWithSourceAndDestination.cs" />
+    <Compile Include="Compression\CompressAction.cs" />
+    <Compile Include="Compression\Threads\CompressorThread.cs" />
+    <Compile Include="Compression\FilePacketArray.cs" />
+    <Compile Include="Compression\FilePacketMemoryStream.cs" />
+    <Compile Include="Compression\OrderingQueue.cs" />
+    <Compile Include="Compression\Threads\ReaderThread.cs" />
+    <Compile Include="Compression\SharedState\CompressorWriterSharedState.cs" />
+    <Compile Include="Compression\SharedState\ICancellable.cs" />
+    <Compile Include="Compression\SharedState\IForCompressorThreadInput.cs" />
+    <Compile Include="Compression\SharedState\IForCompressorThreadOutput.cs" />
+    <Compile Include="Compression\SharedState\IForReaderThread.cs" />
+    <Compile Include="Compression\SharedState\IForWriterThread.cs" />
+    <Compile Include="Compression\SharedState\ReaderCompressorSharedState.cs" />
+    <Compile Include="Compression\Threads\WriterThread.cs" />
+    <Compile Include="Decompression\DecompressAction.cs" />
+    <Compile Include="FileStreamHelper.cs" />
+    <Compile Include="HelpAction.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
