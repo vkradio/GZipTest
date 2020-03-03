@@ -7,43 +7,43 @@ namespace GZipTest.Compression.SharedState
     class CompressorWriterSharedState : ICancellable, IForCompressorThreadOutput, IForWriterThread
     {
         /// <summary>
-        /// События для &quot;производителя&quot;
+        /// Events for &quot;producer&quot;
         /// </summary>
         enum EventsForProducer
         {
             /// <summary>
-            /// Свободное место существует
+            /// Free space exists
             /// </summary>
             SpaceExists = -1,
             /// <summary>
-            /// Свободное место появилось
+            /// Free space appeared
             /// </summary>
             SpaceAppeared,
             /// <summary>
-            /// Отмена
+            /// Cancel
             /// </summary>
             Cancel
         }
 
         /// <summary>
-        /// События для &quot;потребителя&quot;
+        /// Events for &quot;consumer&quot;
         /// </summary>
         enum EventsForConsumer
         {
             /// <summary>
-            /// В очереди есть пакеты
+            /// There are packed in the queue
             /// </summary>
             PacketsExists = -1,
             /// <summary>
-            /// В очереди появился пакет
+            /// New packet appeared in the queue
             /// </summary>
             PacketAppeared,
             /// <summary>
-            /// Работа всех потоков &quot;производителя&quot; завершена
+            /// All &quot;producer&quot; threads completed their work
             /// </summary>
             ProductionCompleted,
             /// <summary>
-            /// Отмена
+            /// Cancel
             /// </summary>
             Cancel
         }
@@ -74,12 +74,12 @@ namespace GZipTest.Compression.SharedState
             eventsForConsumer[(int)EventsForConsumer.Cancel] = eventForWorkCancellation;
         }
 
-        #region Публичный интерфейс.
+        #region Public interface
         public static ICancellable Create(int numberOfCompressorThreads, int queueLimit) =>
             new CompressorWriterSharedState(numberOfCompressorThreads, queueLimit);
 
         /// <summary>
-        /// Отменить выполняемую работу
+        /// Cancel work
         /// </summary>
         public void Cancel()
         {
@@ -96,10 +96,10 @@ namespace GZipTest.Compression.SharedState
         }
 
         /// <summary>
-        /// Постановка в очередь сжатого &quot;пакета&quot;
+        /// Putting compressed &quot;packet&quot; into the queue
         /// </summary>
-        /// <param name="filePacket">Кусочек сжатого файла</param>
-        /// <param name="cancel">Признак отмены задачи</param>
+        /// <param name="filePacket">Piece of compressed file</param>
+        /// <param name="cancel">Cancellation flag</param>
         public void Produce(FilePacketMemoryStream filePacket, out bool cancel)
         {
             Debug.Assert(filePacket != null, $"{nameof(filePacket)} is null");
@@ -113,7 +113,7 @@ namespace GZipTest.Compression.SharedState
                     return;
 
                 var eventType = EventsForProducer.SpaceExists;
-                // Если очередь заполнена, сваливаемся в ожидание освобождения места.
+                // If queue is full, begin to await for freeing space
                 while (!queue.CanEnqueue(filePacket))
                 {
                     taken = false;
@@ -134,10 +134,10 @@ namespace GZipTest.Compression.SharedState
                     case EventsForProducer.SpaceExists:
                     case EventsForProducer.SpaceAppeared:
                         queue.Enqueue(filePacket);
-                        if (queue.EnqueueAddedFirstAvailableItem) // Если это первый доступный пакет в очереди, ставим сигнал для потребителей.
+                        if (queue.EnqueueAddedFirstAvailableItem) // If it is a first awailable packet in the queue, setting the signal to the consumer
                             eventForFirstPacketInQueue.Set();
                         if (eventType == EventsForProducer.SpaceAppeared && !queue.HaveSpace())
-                            eventForNewSpaceInQueue.Reset(); // Сбрасываем свой сигнал появления места.
+                            eventForNewSpaceInQueue.Reset(); // Resetting our signal of new space appearance
                         break;
                     case EventsForProducer.Cancel:
                         cancel = true;
@@ -155,7 +155,7 @@ namespace GZipTest.Compression.SharedState
         }
 
         /// <summary>
-        /// Работа (одного) потока компрессии завершена
+        /// The work of one comression thread completed
         /// </summary>
         public void CompressionCompleted()
         {
@@ -173,10 +173,10 @@ namespace GZipTest.Compression.SharedState
         }
 
         /// <summary>
-        /// Извлечение очередного кусочка сжатого файла
+        /// Get the next piece of the compressed file
         /// </summary>
-        /// <returns>Пакет с частью сжатого файла, либо null, если файл кончился</returns>
-        /// <param name="cancel">Признак отмены задачи</param>
+        /// <returns>Packet containing part of the compressed file, or null, if file is ended</returns>
+        /// <param name="cancel">Cancellation flag</param>
         public FilePacketMemoryStream Consume(out bool cancel)
         {
             FilePacketMemoryStream result = null;
@@ -190,7 +190,7 @@ namespace GZipTest.Compression.SharedState
                     return result; // Пустой результат.
 
                 var eventType = EventsForConsumer.PacketsExists;
-                // Если очередь пуста, сваливаемся в ожидание пополнения очереди.
+                // If queue is empty, begin to await when it's filled
                 while (queue.CountContiguous == 0 && activeCompressorThreads != 0)
                 {
                     taken = false;
@@ -208,10 +208,9 @@ namespace GZipTest.Compression.SharedState
                     }
                 }
 
-                // Если очередь пуста и все потоки компрессора завершили работу, значит
-                // и мы тоже завершаем работу.
+                // If queue is empty and all compressor threads finished their work, we are finishing our work too
                 if (queue.CountContiguous == 0 && activeCompressorThreads == 0)
-                    return result; // Пустой результат.
+                    return result; // Empty result
 
                 switch (eventType)
                 {
@@ -219,13 +218,13 @@ namespace GZipTest.Compression.SharedState
                     case EventsForConsumer.PacketAppeared:
                         var hasSpace = queue.HaveSpace();
                         result = queue.Dequeue();
-                        if (!hasSpace && queue.HaveSpace()) // Если в очереди появилось одно свободное место, сигналим об этом производителю.
+                        if (!hasSpace && queue.HaveSpace()) // If one new free space appeared in the queue, send signal to the producer
                             eventForNewSpaceInQueue.Set();
                         if (eventType == EventsForConsumer.PacketAppeared && queue.CountContiguous == 0)
-                            eventForFirstPacketInQueue.Reset(); // Сбрасываем свой сигнал появления пакета.
+                            eventForFirstPacketInQueue.Reset(); // Resetting our signal about packet appearing
                         break;
                     case EventsForConsumer.ProductionCompleted:
-                        // Ничего не делаем, просто вернем внизу ранее инициализированный пустой результат.
+                        // Do nothing, just returning the pre-initialized empty result below
                         break;
                     case EventsForConsumer.Cancel:
                         cancel = true;

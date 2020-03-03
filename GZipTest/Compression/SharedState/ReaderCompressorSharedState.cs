@@ -6,62 +6,62 @@ using System.Threading;
 namespace GZipTest.Compression.SharedState
 {
     /// <summary>
-    /// Состояние, общее для потоков чтения и компрессии файла
+    /// Shared state for reading and compressing threads
     /// </summary>
     class ReaderCompressorSharedState : ICancellable, IForReaderThread, IForCompressorThreadInput
     {
         /// <summary>
-        /// События для &quot;производителя&quot;
+        /// Events for &quot;producer&quot;
         /// </summary>
         enum EventsForProducer
         {
             /// <summary>
-            /// Свободное место существует
+            /// There is free space
             /// </summary>
             SpaceExists = -1,
             /// <summary>
-            /// Свободное место появилось
+            /// The free space has been appeared
             /// </summary>
             SpaceAppeared,
             /// <summary>
-            /// Отмена
+            /// Cancel
             /// </summary>
             Cancel
         }
 
         /// <summary>
-        /// События для &quot;потребителя&quot;
+        /// Events for &quot;consumer&quot;
         /// </summary>
         enum EventsForConsumer
         {
             /// <summary>
-            /// В очереди есть пакеты
+            /// There are packets in the queue
             /// </summary>
             PacketsExists = -1,
             /// <summary>
-            /// В очереди появился пакет
+            /// Packet has been appeared in the queue
             /// </summary>
             PacketAppeared,
             /// <summary>
-            /// Чтение файла завершено
+            /// File read completed
             /// </summary>
             ReadCompleted,
             /// <summary>
-            /// Отмена
+            /// Cancel
             /// </summary>
             Cancel
         }
 
-        #region Состояние очереди.
+        #region State of the queue
         readonly int queueDepth;
         readonly FilePacketArray[] packetQueue;
         int queueFilledCount;
         readonly int packetSize;
-        int nextBufIndexToProduce; // Следующий буфер для заполнения
-        int nextBufIndexToConsume; // Следующих буфер для чтения
+        int nextBufIndexToProduce; // Next buffer for produce
+        int nextBufIndexToConsume; // Next buffer for read
         #endregion
 
-        readonly Mutex mutex = new Mutex(); // Мутекс, защищающий всё состояние
+        readonly Mutex mutex = new Mutex(); // Mutex for protecting the overall state
         readonly ManualResetEvent eventForNewSpaceInQueue = new ManualResetEvent(false);
         readonly ManualResetEvent eventForFirstPacketInQueue = new ManualResetEvent(false);
         readonly ManualResetEvent eventForInputCompletion = new ManualResetEvent(false);
@@ -112,12 +112,12 @@ namespace GZipTest.Compression.SharedState
             return result;
         }
 
-        #region Публичный интерфейс.
+        #region Public interface
         public static ICancellable Create(int queueDepth, int packetSize) =>
             new ReaderCompressorSharedState(queueDepth, packetSize);
 
         /// <summary>
-        /// Отменить выполняемую работу
+        /// Cancel work
         /// </summary>
         public void Cancel()
         {

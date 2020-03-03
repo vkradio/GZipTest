@@ -14,7 +14,7 @@ namespace GZipTest.Compression
 
         protected override void ExecuteConcrete()
         {
-            #region Расширение архивного файла.
+            #region Extension of the compressed file
             try
             {
                 var extension = Path.GetExtension(destination);
@@ -23,17 +23,17 @@ namespace GZipTest.Compression
             }
             catch
             {
-                Console.WriteLine("Имя результирующего файла содержит неверные символы.");
+                Console.WriteLine("Resulting file name contrains invalid characters.");
                 return;
             }
             #endregion
 
-            #region Проверка и перезапись существующего файла.
+            #region Checking and re-writing existing file
             try
             {
                 if (File.Exists(destination))
                 {
-                    Console.WriteLine($"Файл {destination} существует. Перезаписать? y/n");
+                    Console.WriteLine($"The file {destination} already exists. Rewrite it? y/n");
                     var answer = Console.ReadLine();
                     if (!answer.Equals("y", StringComparison.CurrentCultureIgnoreCase))
                     {
@@ -47,17 +47,17 @@ namespace GZipTest.Compression
                         }
                         catch (UnauthorizedAccessException)
                         {
-                            Console.WriteLine("У вас нет прав на перезапись файла, либо файл используется другим приложением.");
+                            Console.WriteLine("You have no rights to overwrite the file, or this file is in use by another app.");
                             return;
                         }
                         catch (IOException)
                         {
-                            Console.WriteLine("Файл используется другим приложением, поэтому его невозможно перезаписать.");
+                            Console.WriteLine("The file is in use by another app, so it is unable to overwrite it.");
                             return;
                         }
                         catch
                         {
-                            Console.WriteLine("Невозможно перезаписать файл. Скорее всего, вы задали неверное наименование.");
+                            Console.WriteLine("Unable to overwrite this file. Probably you've set an invalid file name.");
                             return;
                         }
                     }
@@ -65,7 +65,7 @@ namespace GZipTest.Compression
             }
             catch
             {
-                Console.WriteLine("Произошла неизвестная ошибка. Попробуйте задать другое имя результирующего файла.");
+                Console.WriteLine("Unknown error. Please try set another resulting file name.");
             }
             #endregion
 

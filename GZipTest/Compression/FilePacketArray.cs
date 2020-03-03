@@ -3,7 +3,7 @@
 namespace GZipTest.Compression
 {
     /// <summary>
-    /// Пакет, содержащий часть файла (реализация с помощью массива)
+    /// Packet containing part of the file (implementation using an array)
     /// </summary>
     public class FilePacketArray
     {

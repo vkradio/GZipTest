@@ -15,7 +15,7 @@ namespace GZipTest.Compression.Threads
         readonly bool debugMode;
 
         /// <summary>
-        /// Отмена с глушением исключений
+        /// Cancel with suppressing any exceptions
         /// </summary>
         void SafeCancel()
         {
@@ -29,11 +29,11 @@ namespace GZipTest.Compression.Threads
         }
 
         /// <summary>
-        /// Конструктор
+        /// Constructor
         /// </summary>
-        /// <param name="inputBufSize">Размер буфера чтения</param>
-        /// <param name="inputState">Разделяемое с потоком чтения состояние</param>
-        /// <param name="debugMode">В режиме отладки не жмём блоки, а просто сохраняем их на диск в виде: номер_пакета-номер_потока.txt</param>
+        /// <param name="inputBufSize">Input buffer size</param>
+        /// <param name="inputState">State, shared with reading thread</param>
+        /// <param name="debugMode">In debug mode we are not compressing blocks, but instead save them to disk in the form: packet_number-thread_number.txt</param>
         public CompressorThread(int inputBufSize, IForCompressorThreadInput inputState, IForCompressorThreadOutput outputState, bool debugMode = false)
         {
             this.inputBufSize = inputBufSize;
@@ -45,7 +45,7 @@ namespace GZipTest.Compression.Threads
         }
 
         /// <summary>
-        /// Исполняемое тело потока
+        /// Thread&amp;s executing body
         /// </summary>
         void RunThread()
         {
@@ -54,7 +54,7 @@ namespace GZipTest.Compression.Threads
                 FilePacketMemoryStream notCompressedPacket;
                 bool cancel;
 
-                #region Нормальный вариант компрессии.
+                #region Normal (production) compression mode
                 if (!debugMode)
                 {
                     while ((notCompressedPacket = inputState.Consume(out cancel)) != null && !cancel)
@@ -87,8 +87,8 @@ namespace GZipTest.Compression.Threads
 
                             if (cancel)
                             {
-                                // Если получили сигнал отмены из выходного состояния, передаём его также во входное,
-                                // затем выходим из потока.
+                                // If got a signal to exit from the output state, hand over it to the input state too,
+                                // and then quit from the thread.
                                 ((ICancellable)inputState).Cancel();
                                 return;
                             }
@@ -101,7 +101,7 @@ namespace GZipTest.Compression.Threads
                 }
                 #endregion
 
-                #region Отладочный вариант - вместо компрессии просто сохраняем пакеты в файлы с именем, состоящим из номера пакета и id потока.
+                #region Debug mode: instrad of compression, simply save packets to files with names, consisting of packet number and thread id
                 else
                 {
                     while ((notCompressedPacket = inputState.Consume(out cancel)) != null && !cancel)
@@ -125,14 +125,14 @@ namespace GZipTest.Compression.Threads
             catch (Exception ex)
             {
                 SafeCancel();
-                Console.WriteLine("В потоке компрессии произошла ошибка: " + ex.ToString());
+                Console.WriteLine("Error in compression thread: " + ex.ToString());
             }
 
             outputState.CompressionCompleted();
         }
 
         /// <summary>
-        /// Ожидание завершения потока
+        /// Await for thread ending
         /// </summary>
         public void Join() => thread.Join();
     }

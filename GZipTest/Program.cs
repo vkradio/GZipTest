@@ -21,7 +21,7 @@ namespace GZipTest
 
             action.Execute();
 
-            return 0; // -1 если ошибка.
+            return 0; // -1 for error
         }
     }
 }

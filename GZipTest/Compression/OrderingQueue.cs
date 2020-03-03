@@ -7,7 +7,7 @@ using System.Text;
 namespace GZipTest.Compression
 {
     /// <summary>
-    /// Упорядочивающая очередь
+    /// Ordering queue
     /// </summary>
     class OrderingQueue
     {
@@ -29,7 +29,7 @@ namespace GZipTest.Compression
             Debug.Assert(item != null, $"{nameof(item)} is null");
 
             var canEnqueue = storage.Count < SoftLimit;
-            if (!canEnqueue) // Если лимит заполнен, всё же можно добавлять в очередь, если новый индекс входит в нижний диапазон.
+            if (!canEnqueue) // If limit is filled, we can add to queue, only if the new index limited by lower range edge
                 canEnqueue = item.Index < storage[storage.Count - 1].Index;
             return canEnqueue;
         }
@@ -51,7 +51,7 @@ namespace GZipTest.Compression
             {
                 storage.Insert(0, item);
             }
-            else // Если же нет, то добавляем, а затем пересортируем хранилище.
+            else // If not, then add, and then resort the storage
             {
                 storage.Add(item);
                 storage.Sort((i1, i2) => i1.Index.CompareTo(i2.Index));
@@ -80,12 +80,12 @@ namespace GZipTest.Compression
         }
 
         /// <summary>
-        /// Общее количество элементов
+        /// Overall element count
         /// </summary>
         public int Count { get => storage.Count; }
 
         /// <summary>
-        /// Количество элементов в очереди, которые можно упорядоченно извлечь
+        /// Count of elements in queue, which we can pull in ordered manner
         /// </summary>
         public int CountContiguous
         {
@@ -101,7 +101,7 @@ namespace GZipTest.Compression
         }
 
         /// <summary>
-        /// До последнего размещения объекта в очереди взять объект из очереди было нельзя, а теперь можно
+        /// Now we can get an object from the queue, but it was not possible before placing the last object
         /// </summary>
         public bool EnqueueAddedFirstAvailableItem { get => enqueueAddedFirstAvailableItem; }
     }

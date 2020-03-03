@@ -46,12 +46,12 @@ namespace GZipTest
             sourceType = GetFileType(source);
             if (sourceType == FileType.NotExists)
             {
-                Console.WriteLine($"Файл не существует: {source}");
+                Console.WriteLine($"File not exists: {source}");
                 return;
             }
             if (source.Equals(destination, StringComparison.CurrentCultureIgnoreCase) && destination.EndsWith(".gz", StringComparison.CurrentCultureIgnoreCase))
             {
-                Console.WriteLine("Имена исходного и результируюшего файла не должны совпадать.");
+                Console.WriteLine("Names of source and result files should differ.");
                 return;
             }
             ExecuteConcrete();
