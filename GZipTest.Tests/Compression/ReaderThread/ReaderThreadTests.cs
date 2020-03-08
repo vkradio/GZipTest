@@ -15,9 +15,8 @@ namespace GZipTest.Tests.Compression.ReaderThread
 
         TestContext testContextInstance;
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
+        /// Gets or sets the test context which provides information about and functionality for the current test run
+        /// </summary>
         public TestContext TestContext { get => testContextInstance; set => testContextInstance = value; }
 
         delegate void ProduceCallback(FilePacketArray filePacket, out bool cancel);
@@ -43,11 +42,11 @@ namespace GZipTest.Tests.Compression.ReaderThread
             reader.Join(100);
 
             // assert
-            Assert.AreEqual(1, packets.Count, $"После чтения пустого файла ожидается 1 пакет, а получено: {packets.Count}.");
-            Assert.IsNotNull(packets[0].Buffer, "После чтения пустого файла единственный буфер равен null");
-            Assert.AreEqual(c_packetSize, packets[0].Buffer.Length, $"После чтения пустого файла размер единственного буфера должен быть равен {c_packetSize} байт, вместо этого равен: {packets[0].Buffer.Length} байт");
-            Assert.AreEqual(0, packets[0].FilledLength, $"После чтения пустого файла заполненная длина единственного буфера должна быть равна 0, вместо этого равна: {packets[0].FilledLength}");
-            Assert.AreEqual(0, packets[0].Index, $"После чтения пустого файла единственный пакет должен иметь индекс, равный 0, вместо этого индекс равен: {packets[0].Index}");
+            Assert.AreEqual(1, packets.Count, $"After reading empty file we expect 1 packet, but received: {packets.Count}.");
+            Assert.IsNotNull(packets[0].Buffer, "After reading empty file the single buffer is null");
+            Assert.AreEqual(c_packetSize, packets[0].Buffer.Length, $"After reading empty file the single buffer's size should be equal to {c_packetSize} bytes, but instead is equal to: {packets[0].Buffer.Length} bytes");
+            Assert.AreEqual(0, packets[0].FilledLength, $"After reading empty file the filled lenght of the single buffer should be equal to 0, but instead it equal to: {packets[0].FilledLength}");
+            Assert.AreEqual(0, packets[0].Index, $"After reading empty file the single packet shoud have an index of 0, but instead it has a value: {packets[0].Index}");
         }
 
         [TestMethod]
@@ -69,11 +68,11 @@ namespace GZipTest.Tests.Compression.ReaderThread
             reader.Join(100);
 
             // assert
-            Assert.AreEqual(1, packets.Count, $"После чтения файла ожидается 1 пакет, а получено: {packets.Count}.");
-            Assert.IsNotNull(packets[0].Buffer, "После чтения файла единственный буфер равен null");
-            Assert.AreEqual(c_packetSize, packets[0].Buffer.Length, $"После чтения файла размер единственного буфера должен быть равен {c_packetSize} байт, вместо этого равен: {packets[0].Buffer.Length} байт");
-            Assert.AreEqual(578, packets[0].FilledLength, $"После чтения файла размером 578 байт заполненная длина единственного буфера должна быть равна 578, вместо этого равна: {packets[0].FilledLength}");
-            Assert.AreEqual(0, packets[0].Index, $"После чтения файла единственный пакет должен иметь индекс, равный 0, вместо этого индекс равен: {packets[0].Index}");
+            Assert.AreEqual(1, packets.Count, $"After reading a file we expect 1 packet, but received: {packets.Count}.");
+            Assert.IsNotNull(packets[0].Buffer, "After reading a file the single buffer is null");
+            Assert.AreEqual(c_packetSize, packets[0].Buffer.Length, $"After reading a file the size of single buffer should be equal to {c_packetSize} bytes, but instead in equal to: {packets[0].Buffer.Length} bytes");
+            Assert.AreEqual(578, packets[0].FilledLength, $"After reading a file having 578 bytes of size, the filled lenght of single buffer should be 578, but instead it has a value: {packets[0].FilledLength}");
+            Assert.AreEqual(0, packets[0].Index, $"After reading a file the single packet should have an index of 0, but instead it has a value: {packets[0].Index}");
         }
 
         [TestMethod]
@@ -95,16 +94,16 @@ namespace GZipTest.Tests.Compression.ReaderThread
             reader.Join(100);
 
             // assert
-            Assert.AreEqual(4, packets.Count, $"После чтения файла ожидается 4 пакета, а получено: {packets.Count}.");
+            Assert.AreEqual(4, packets.Count, $"After reading a file expected 4 packets, but received: {packets.Count}.");
             for (var i = 0; i < 4; i++)
             {
-                Assert.IsNotNull(packets[i].Buffer, $"После чтения файла буфер {i} равен null");
-                Assert.AreEqual(c_packetSize, packets[i].Buffer.Length, $"После чтения файла размер буфера {i} должен быть равен {c_packetSize} байт, вместо этого равен: {packets[i].Buffer.Length} байт");
+                Assert.IsNotNull(packets[i].Buffer, $"After reading a file the buffer {i} is null");
+                Assert.AreEqual(c_packetSize, packets[i].Buffer.Length, $"After reading a file the size of buffer {i} should be equal {c_packetSize} bytes, but instead it equal to: {packets[i].Buffer.Length} bytes");
                 if (i != 3)
-                    Assert.AreEqual(c_packetSize, packets[i].FilledLength, $"После чтения файла размером 13224960 байт заполненная длина буфера {i} должна быть равна {c_packetSize}, вместо этого равна: {packets[i].FilledLength}");
-                Assert.AreEqual(i, packets[i].Index, $"После чтения файла пакет {i} должен иметь индекс {i}, вместо этого индекс равен: {packets[i].Index}");
+                    Assert.AreEqual(c_packetSize, packets[i].FilledLength, $"After reading a file having 13224960 bytes of size, the filled length of buffer {i} should be equal to {c_packetSize}, but instead it equals: {packets[i].FilledLength}");
+                Assert.AreEqual(i, packets[i].Index, $"After reading a file the packet {i} should has an index {i}, but instead index equals to: {packets[i].Index}");
             }
-            Assert.AreEqual(13224960 - c_packetSize * 3, packets[3].FilledLength, $"После чтения файла размером 13224960 байт заполненная длина буфера 3 должна быть равна 642048, вместо этого равна: {packets[3].FilledLength}");
+            Assert.AreEqual(13224960 - c_packetSize * 3, packets[3].FilledLength, $"After reading a file having a size of 13224960 bytes, the filled size of buffer 3 should be equal to 642048, but instead it equals to: {packets[3].FilledLength}");
         }
 
         [TestMethod]
@@ -120,7 +119,7 @@ namespace GZipTest.Tests.Compression.ReaderThread
             reader.Join(100);
 
             // assert
-            mock.Verify(r => r.ReadCompleted(), Times.Once(), "ReadCompleted должен быть вызван 1 раз.");
+            mock.Verify(r => r.ReadCompleted(), Times.Once(), "ReadCompleted should be called 1 time.");
         }
     }
 }

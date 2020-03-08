@@ -1,15 +1,15 @@
 ﻿namespace GZipTest.Compression.SharedState
 {
     /// <summary>
-    /// Ограничивает управление совместным состоянием для потока, записываюего файл
+    /// Restricting control of shared state for thread which writes file
     /// </summary>
     interface IForWriterThread
     {
         /// <summary>
-        /// Извлечение очередного кусочка сжатого файла
+        /// Extracting of the next piece of compressed file
         /// </summary>
-        /// <returns>Пакет с частью сжатого файла, либо null, если файл кончился</returns>
-        /// <param name="cancel">Признак отмены задачи</param>
+        /// <returns>Packet containing part of compressed file, or null, if file is ended</returns>
+        /// <param name="cancel">Cancellation flag</param>
         FilePacketMemoryStream Consume(out bool cancel);
     }
 }

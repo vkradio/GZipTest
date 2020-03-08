@@ -134,10 +134,10 @@ namespace GZipTest.Compression.SharedState
         }
 
         /// <summary>
-        /// Сохранение прочитанного &quot;пакета&quot; файла
+        /// Saving &quot;packet&quot; of file
         /// </summary>
-        /// <param name="filePacket">Кусочек исходного файла</param>
-        /// <param name="cancel">Признак отмены задачи</param>
+        /// <param name="filePacket">Piece of source file</param>
+        /// <param name="cancel">Cancellation flag</param>
         public void Produce(FilePacketArray filePacket, out bool cancel)
         {
             Debug.Assert(filePacket != null, $"{nameof(filePacket)} is null");
@@ -152,7 +152,7 @@ namespace GZipTest.Compression.SharedState
                     return;
 
                 var eventType = EventsForProducer.SpaceExists;
-                // Если очередь заполнена, сваливаемся в ожидание освобождения места.
+                // If queue is full, start awaiting for free space
                 while (queueFilledCount == queueDepth)
                 {
                     taken = false;
@@ -173,10 +173,10 @@ namespace GZipTest.Compression.SharedState
                     case EventsForProducer.SpaceExists:
                     case EventsForProducer.SpaceAppeared:
                         Enqueue(filePacket);
-                        if (queueFilledCount == 1) // Если это первый пакет в очереди, ставим сигнал для потребителей.
+                        if (queueFilledCount == 1) // If it is a first packet in queue, setting signal for consumers
                             eventForFirstPacketInQueue.Set();
                         if (eventType == EventsForProducer.SpaceAppeared && queueFilledCount == queueDepth)
-                            eventForNewSpaceInQueue.Reset(); // Сбрасываем свой сигнал появления места.
+                            eventForNewSpaceInQueue.Reset(); // Resetting our signal about appearing of free space
                         break;
                     case EventsForProducer.Cancel:
                         cancel = true;
@@ -194,7 +194,7 @@ namespace GZipTest.Compression.SharedState
         }
 
         /// <summary>
-        /// Работа потока чтения завершена
+        /// Reading thread finished it&apos;s work
         /// </summary>
         public void ReadCompleted()
         {
@@ -211,9 +211,9 @@ namespace GZipTest.Compression.SharedState
         }
 
         /// <summary>
-        /// Извлечение очередного кусочка несжатого файла
+        /// Consuming the next piece of uncompressed file
         /// </summary>
-        /// <param name="cancel">Признак отмены задачи</param>
+        /// <param name="cancel">Cancellation flag</param>
         public FilePacketMemoryStream Consume(out bool cancel)
         {
             FilePacketMemoryStream result = null;
@@ -227,7 +227,7 @@ namespace GZipTest.Compression.SharedState
                     return result;
 
                 var eventType = EventsForConsumer.PacketsExists;
-                // Если очередь пуста, сваливаемся в ожидание пополнения очереди.
+                // If queue if empty, begin to await for it's replenishment
                 while (queueFilledCount == 0 && !readCompleted)
                 {
                     taken = false;
@@ -251,13 +251,13 @@ namespace GZipTest.Compression.SharedState
                     case EventsForConsumer.PacketsExists:
                     case EventsForConsumer.PacketAppeared:
                         result = Dequeue();
-                        if (queueFilledCount == queueDepth - 1) // Если в очереди появилось одно свободное место, сигналим об этом производителю.
+                        if (queueFilledCount == queueDepth - 1) // If there is new free space appeared in the queue, signaling producer about it
                             eventForNewSpaceInQueue.Set();
                         if (eventType == EventsForConsumer.PacketAppeared && queueFilledCount == 0)
-                            eventForFirstPacketInQueue.Reset(); // Сбрасываем свой сигнал появления пакета.
+                            eventForFirstPacketInQueue.Reset(); // Resetting our signal about new packet appering
                         break;
                     case EventsForConsumer.ReadCompleted:
-                        // Ничего не делаем, просто вернем внизу ранее инициализированный пустой результат.
+                        // Do nothing, just below we'll return the empty pre-initialized result
                         break;
                     case EventsForConsumer.Cancel:
                         cancel = true;

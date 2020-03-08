@@ -6,7 +6,7 @@ using System.Threading;
 namespace GZipTest.Compression.Threads
 {
     /// <summary>
-    /// Поток чтения файла
+    /// File reader thread
     /// </summary>
     public class ReaderThread
     {
@@ -16,7 +16,7 @@ namespace GZipTest.Compression.Threads
         readonly Thread thread;
 
         /// <summary>
-        /// Отмена с глушением исключений
+        /// Cancelling with jamming potential exceptions
         /// </summary>
         void SafeCancel()
         {
@@ -30,11 +30,11 @@ namespace GZipTest.Compression.Threads
         }
 
         /// <summary>
-        /// Конструктор
+        /// Constructor
         /// </summary>
-        /// <param name="file">Путь к читаемому файлу</param>
-        /// <param name="bufSize">Размер буфера чтения</param>
-        /// <param name="outputState">Разделяемое с потоком компрессии состояние</param>
+        /// <param name="file">Path to file which need to be read</param>
+        /// <param name="bufSize">Read buffer size</param>
+        /// <param name="outputState">State, shared with compression thread</param>
         public ReaderThread(string file, int bufSize, IForReaderThread outputState)
         {
             this.file = file;
@@ -45,7 +45,7 @@ namespace GZipTest.Compression.Threads
         }
 
         /// <summary>
-        /// Исполняемое тело потока
+        /// Thread&apos;s execution body
         /// </summary>
         void RunThread()
         {
@@ -67,7 +67,7 @@ namespace GZipTest.Compression.Threads
                         count++;
                     }
 
-                    if (count == 0) // Если файл пустой.
+                    if (count == 0) // If file is empty
                     {
                         packet.FilledLength = 0;
                         outputState.Produce(packet, out var cancel);
@@ -79,22 +79,22 @@ namespace GZipTest.Compression.Threads
             catch (IOException)
             {
                 SafeCancel();
-                Console.WriteLine("Не удалось прочитать файл.");
+                Console.WriteLine("Could not read the file.");
             }
             catch (Exception ex)
             {
                 SafeCancel();
-                Console.WriteLine("В потоке чтения файла произошла ошибка: " + ex.ToString());
+                Console.WriteLine("Error in file reading thread: " + ex.ToString());
             }
         }
 
         /// <summary>
-        /// Ожидание завершения потока
+        /// Awaiting for thread finish
         /// </summary>
         public void Join() => thread.Join();
 
         /// <summary>
-        /// Ожидание завершения потока
+        /// Awaiting for thread finish
         /// </summary>
         public void Join(int millisecondsTimeout) => thread.Join(millisecondsTimeout);
     }

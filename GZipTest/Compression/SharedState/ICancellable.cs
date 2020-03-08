@@ -1,7 +1,7 @@
 ﻿namespace GZipTest.Compression.SharedState
 {
     /// <summary>
-    /// Limiting management of the shared state for the thread which can cancel the work
+    /// Restricting control of shared state for thread which can cancel the work
     /// </summary>
     interface ICancellable
     {

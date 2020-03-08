@@ -1,7 +1,7 @@
 ﻿namespace GZipTest.Compression.SharedState
 {
     /// <summary>
-    /// Limiting management of the shared state for the compressor thread at its entry
+    /// Restricting control of shared state for compressor thread at it&apos;s input
     /// </summary>
     interface IForCompressorThreadInput
     {

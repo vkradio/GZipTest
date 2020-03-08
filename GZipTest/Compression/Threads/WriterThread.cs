@@ -6,7 +6,7 @@ using System.Threading;
 namespace GZipTest.Compression.Threads
 {
     /// <summary>
-    /// Поток записи сжатого файла
+    /// Compressed file writer thread
     /// </summary>
     class WriterThread
     {
@@ -16,7 +16,7 @@ namespace GZipTest.Compression.Threads
         readonly Thread thread;
 
         /// <summary>
-        /// Отмена с глушением исключений
+        /// Cancelling with jamming potential exceptions
         /// </summary>
         void SafeCancel()
         {
@@ -30,11 +30,12 @@ namespace GZipTest.Compression.Threads
         }
 
         /// <summary>
-        /// Удаление части сжатого файла в случае отмены, с глушением исключений
+        /// Removing part of compressed file in case of cancellation, with jamming of potential exceptions
         /// </summary>
         void SafeDeleteFile()
         {
             if (File.Exists(file))
+            {
                 try
                 {
                     File.Delete(file);
@@ -42,14 +43,15 @@ namespace GZipTest.Compression.Threads
                 catch
                 {
                 }
+            }
         }
 
         /// <summary>
-        /// Конструктор
+        /// Constructor
         /// </summary>
-        /// <param name="file">Путь к читаемому файлу</param>
-        /// <param name="bufSize">Размер буфера чтения</param>
-        /// <param name="inputState">Разделяемое с потоком компрессии состояние</param>
+        /// <param name="file">Path to file to be read</param>
+        /// <param name="bufSize">Read buffer size</param>
+        /// <param name="inputState">State, shared with compression thread</param>
         public WriterThread(string file, int bufSize, IForWriterThread inputState)
         {
             this.file = file;
@@ -60,7 +62,7 @@ namespace GZipTest.Compression.Threads
         }
 
         /// <summary>
-        /// Исполняемое тело потока
+        /// Thread&apos;s execution body
         /// </summary>
         void RunThread()
         {
@@ -94,42 +96,42 @@ namespace GZipTest.Compression.Threads
             {
                 SafeCancel();
                 SafeDeleteFile();
-                Console.WriteLine("У вас нет прав на запись в данную папку.");
+                Console.WriteLine("You have no rights to write to this folder.");
             }
             catch (PathTooLongException)
             {
                 SafeCancel();
                 SafeDeleteFile();
-                Console.WriteLine("Путь к файлу слишком велик. Пожалуйста, задайте более короткое имя файла.");
+                Console.WriteLine("File path too long. Please set a shorter file name.");
             }
             catch (DirectoryNotFoundException)
             {
                 SafeCancel();
                 SafeDeleteFile();
-                Console.WriteLine("Папка назначения не существует.");
+                Console.WriteLine("Destination folder not exists.");
             }
             catch (NotSupportedException)
             {
                 SafeCancel();
                 SafeDeleteFile();
-                Console.WriteLine("Недопустимые символы в имени папки или файла назначения.");
+                Console.WriteLine("Invalid characters in destination foder or file name.");
             }
             catch (IOException)
             {
                 SafeCancel();
                 SafeDeleteFile();
-                Console.WriteLine("Не удалось записать файл. Возможно, закончилось место на диске или диск отключен.");
+                Console.WriteLine("Unable to save file. Possibly there is no enough free disk space, or disk was detached.");
             }
             catch (Exception ex)
             {
                 SafeCancel();
                 SafeDeleteFile();
-                Console.WriteLine("В потоке чтения файла произошла ошибка: " + ex.ToString());
+                Console.WriteLine("Error in file read thread: " + ex.ToString());
             }
         }
 
         /// <summary>
-        /// Ожидание завершения потока
+        /// Awaiting for thread ending
         /// </summary>
         public void Join() => thread.Join();
     }

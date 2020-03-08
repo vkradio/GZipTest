@@ -1,19 +1,19 @@
 ﻿namespace GZipTest.Compression.SharedState
 {
     /// <summary>
-    /// Ограничивает управление совместным состоянием для потока, читающего файл
+    /// Restricting control of shared state for thread which reads file
     /// </summary>
     public interface IForReaderThread
     {
         /// <summary>
-        /// Сохранение прочитанного &quot;пакета&quot; файла
+        /// Saving &quot;packet&quot; of file
         /// </summary>
-        /// <param name="filePacket">Кусочек исходного файла</param>
-        /// <param name="cancel">Признак отмены задачи</param>
+        /// <param name="filePacket">Piece of source file</param>
+        /// <param name="cancel">Cancellation token</param>
         void Produce(FilePacketArray filePacket, out bool cancel);
 
         /// <summary>
-        /// Работа потока чтения завершена
+        /// Reading thread has finished it&apos;s work
         /// </summary>
         void ReadCompleted();
     }
